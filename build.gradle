@@ -1,0 +1,52 @@
+plugins {
+    id 'java'
+    id'application'
+}
+
+mainClassName = 'de.sailehd.Main'
+
+version = '0.1.0'
+
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+allprojects {
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    compile("net.dv8tion:JDA:4.2.0_168")
+    compile("ch.qos.logback:logback-classic:1.2.3")
+
+    compile 'com.jcraft:jsch:0.1.55'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
+    compile group: 'net.java.dev.jna', name: 'jna', version: '4.5.1'
+    compile group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
+    compile 'com.github.thelinmichael:spotify-web-api-java:master-SNAPSHOT'
+
+}
+
+test {
+    useJUnitPlatform()
+}
+
+
+jar {
+
+    manifest {
+        attributes 'Main-Class': 'de.sailehd.Main'
+    }
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+compileJava.options.encoding = 'UTF-8'

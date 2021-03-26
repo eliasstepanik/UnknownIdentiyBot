@@ -1,0 +1,15 @@
+Config.esb
+{
+String DefaultRoleID = 814573800682160138
+String Prefix = .
+String Gaming = 814577858785181746
+String DeadByDaylight = 814585334611443732
+String Phasmophobia = 814585539025961010
+String PayDay = 814627373475037294
+String AmongUs = 814627422078763038
+String GTA = 814627498368565249
+String Minecraft = 817323516020916225
+String tempChannel = 814920144005627904
+String EventLog = 814916409997656124
+ArrayList <String> Admins = { 275899874858500096 }
+}

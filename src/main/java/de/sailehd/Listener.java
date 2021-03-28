@@ -1,14 +1,15 @@
 package de.sailehd;
 
-import com.google.gson.JsonObject;
 import de.sailehd.support.Debug;
 import de.sailehd.support.EasyBase;
+import de.sailehd.support.TextColor;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
@@ -27,6 +28,8 @@ public class Listener extends ListenerAdapter {
 
     ArrayList<Integer> tempChannelInt = new ArrayList<Integer>();
     ArrayList<String> tempChannelIDs = new ArrayList<String>();
+
+    ArrayList<String> tempRootChannelIDs = new ArrayList<String>();
 
 
     private Thread loop;
@@ -84,9 +87,17 @@ public class Listener extends ListenerAdapter {
                         }
                         break;
 
-                    case "Say":
+                    case "say":
                         dcsend(messageChannel, command[1]);
                         break;
+
+                    case "update":
+                        tempRootChannelIDs = new ArrayList<String>();
+                        for (VoiceChannel channel: event.getGuild().getCategoryById((String) config.getData("GamingCat")).getVoiceChannels()) {
+                            tempRootChannelIDs.add(channel.getId());
+                        }
+                        break;
+
                     default:
                         dcsend(messageChannel, "Command not found!");
                         break;
@@ -109,82 +120,176 @@ public class Listener extends ListenerAdapter {
 
     }
 
+
     @Override
     public void onGuildVoiceJoin(@NotNull GuildVoiceJoinEvent event) {
-        VoiceChannel channel = event.getChannelJoined();
-        dcsend(event.getGuild().getTextChannelById((String) config.getData("EventLog")), event.getMember().getUser().getName() + " joined " + channel.getName());
+        dcsend(event.getGuild().getTextChannelById((String) config.getData("EventLog")), event.getMember().getUser().getName() + " joined " + event.getChannelJoined().getName());
+        VoiceAction(event);
+    }
 
-        Guild guild = event.getGuild();
-        JDA jda = event.getJDA();
-
-        Category tempChannelCategory = guild.getCategoryById((String) config.getData("tempChannel"));
-
-
-        int delay = 1000;
-        int period = 1000;
-
-        timer = new Timer();
-
-
-
-
-        //Gaming
-        if(channel.getId().equals((String) config.getData("Gaming"))){
-            CreateChannel(guild, tempChannelCategory, event, "Gaming", 0);
-
-            /*timer.scheduleAtFixedRate(new TimerTask() {
-
-                public void run() {
-                    int tempInterval = setInterval();
-
-                    dcsend(event.getGuild().getTextChannelById("814916409997656124"), String.valueOf(tempInterval));
-
-                    if(tempInterval == 0){
-                        dcsend(event.getGuild().getTextChannelById("814916409997656124"), "End");
-                    }
-                }
-            }, delay, period);*/
-
-        }
-
-        //Dead by Daylight
-        else if(channel.getId().equals((String) config.getData("DeadByDaylight"))){
-            CreateChannel(guild, tempChannelCategory, event, "Dead by Daylight", 4);
-        }
-
-        //Phasmophobia
-        else if(channel.getId().equals((String) config.getData("Phasmophobia"))){
-            CreateChannel(guild, tempChannelCategory, event, "Phasmophobia", 4);
-        }
-
-        //PayDay
-        else if(channel.getId().equals((String) config.getData("PayDay"))){
-            CreateChannel(guild, tempChannelCategory, event, "PayDay", 10);
-        }
-
-        //Among Us
-        else if(channel.getId().equals((String) config.getData("AmongUs"))){
-            CreateChannel(guild, tempChannelCategory, event, "Among Us", 10);
-        }
-
-        //GTA
-        else if(channel.getId().equals((String) config.getData("GTA"))){
-            CreateChannel(guild, tempChannelCategory, event, "GTA", 20);
-        }
-
-        //Minecraft
-        else if(channel.getId().equals((String) config.getData("Minecraft"))){
-            CreateChannel(guild, tempChannelCategory, event, "Minecraft", 20);
-        }
-
-        //Gaming
-        else if(channel.getId().equals((String) config.getData("Gaming"))){
-            CreateChannel(guild, tempChannelCategory, event, "Gaming", 20);
-        }
+    @Override
+    public void onGuildVoiceMove(@NotNull GuildVoiceMoveEvent event){
+        dcsend(event.getGuild().getTextChannelById((String) config.getData("EventLog")), "Player " + event.getMember().getUser().getName() + " moved to " + event.getChannelJoined().getName());
+        VoiceAction(event);
     }
 
 
-    void CreateChannel(Guild guild, Category tempChannelCategory, GuildVoiceJoinEvent event, String name, Integer userLimit){
+    void VoiceAction(@NotNull Object eventObject){
+        if(eventObject instanceof GuildVoiceJoinEvent){
+            GuildVoiceJoinEvent event = (GuildVoiceJoinEvent) eventObject;
+
+            VoiceChannel channel = event.getChannelJoined();
+
+            Guild guild = event.getGuild();
+            JDA jda = event.getJDA();
+
+            Category tempChannelCategory = guild.getCategoryById((String) config.getData("tempChannel"));
+
+
+            int delay = 1000;
+            int period = 1000;
+
+            timer = new Timer();
+
+            if(tempRootChannelIDs.contains(channel.getId())){
+                CreateChannel(guild, tempChannelCategory, event, channel.getName(), 0);
+            }
+
+
+
+        }
+        else if(eventObject instanceof GuildVoiceMoveEvent){
+            GuildVoiceMoveEvent event = (GuildVoiceMoveEvent) eventObject;
+
+            VoiceChannel channel = event.getChannelJoined();
+
+            Guild guild = event.getGuild();
+            JDA jda = event.getJDA();
+
+            Category tempChannelCategory = guild.getCategoryById((String) config.getData("tempChannel"));
+
+
+            int delay = 1000;
+            int period = 1000;
+
+            timer = new Timer();
+
+
+
+
+            if(tempRootChannelIDs.contains(channel.getId())){
+                CreateChannel(guild, tempChannelCategory, event, channel.getName(), 0);
+            }
+
+            if(tempChannelIDs.contains(event.getChannelLeft().getId()) && event.getChannelLeft().getMembers().size() == 0){
+                DeleteChannel(event, event.getChannelLeft());
+            }
+
+        }
+    }
+
+    void CreateChannel(Guild guild, Category tempChannelCategory, Object eventObject, String name, Integer userLimit){
+
+        if(eventObject instanceof GuildVoiceJoinEvent){
+            GuildVoiceJoinEvent event = (GuildVoiceJoinEvent) eventObject;
+            ChannelAction<VoiceChannel> createdChannel = guild.createVoiceChannel(name + " " + UUID.randomUUID().toString());
+            createdChannel.setParent(tempChannelCategory);
+
+            ArrayList<Permission> allow = new ArrayList<Permission>();
+            allow.add(Permission.VIEW_CHANNEL);
+            allow.add(Permission.MANAGE_CHANNEL);
+            allow.add(Permission.MANAGE_PERMISSIONS);
+            allow.add(Permission.CREATE_INSTANT_INVITE);
+            allow.add(Permission.VOICE_CONNECT);
+            allow.add(Permission.VOICE_SPEAK);
+            allow.add(Permission.VOICE_STREAM);
+            allow.add(Permission.VOICE_MUTE_OTHERS);
+            allow.add(Permission.VOICE_MOVE_OTHERS);
+            allow.add(Permission.VOICE_USE_VAD);
+            allow.add(Permission.PRIORITY_SPEAKER);
+            allow.add(Permission.VOICE_DEAF_OTHERS);
+
+            ArrayList<Permission> deny = new ArrayList<Permission>();
+
+
+
+
+            createdChannel.addMemberPermissionOverride(Long.parseLong(event.getMember().getId()), allow, deny);
+
+            if(userLimit != 0){
+                createdChannel.setUserlimit(userLimit);
+            }
+
+
+
+            VoiceChannel cChannel = createdChannel.complete();
+            tempChannelInt.set(0, tempChannelInt.get(0) + 1);
+            guild.moveVoiceMember(event.getMember(), cChannel).queue();
+            tempChannelIDs.add(cChannel.getId());
+
+            dcsend(event.getGuild().getTextChannelById((String) config.getData("EventLog")), "Created Channel " + cChannel.getName());
+        }
+        else if(eventObject instanceof GuildVoiceMoveEvent){
+            GuildVoiceMoveEvent event = (GuildVoiceMoveEvent) eventObject;
+            ChannelAction<VoiceChannel> createdChannel = guild.createVoiceChannel(name + " " + UUID.randomUUID().toString());
+            createdChannel.setParent(tempChannelCategory);
+
+            ArrayList<Permission> allow = new ArrayList<Permission>();
+            allow.add(Permission.VIEW_CHANNEL);
+            allow.add(Permission.MANAGE_CHANNEL);
+            allow.add(Permission.MANAGE_PERMISSIONS);
+            allow.add(Permission.CREATE_INSTANT_INVITE);
+            allow.add(Permission.VOICE_CONNECT);
+            allow.add(Permission.VOICE_SPEAK);
+            allow.add(Permission.VOICE_STREAM);
+            allow.add(Permission.VOICE_MUTE_OTHERS);
+            allow.add(Permission.VOICE_MOVE_OTHERS);
+            allow.add(Permission.VOICE_USE_VAD);
+            allow.add(Permission.PRIORITY_SPEAKER);
+            allow.add(Permission.VOICE_DEAF_OTHERS);
+
+            ArrayList<Permission> deny = new ArrayList<Permission>();
+
+
+
+
+            createdChannel.addMemberPermissionOverride(Long.parseLong(event.getMember().getId()), allow, deny);
+
+            if(userLimit != 0){
+                createdChannel.setUserlimit(userLimit);
+            }
+
+
+
+            VoiceChannel cChannel = createdChannel.complete();
+            tempChannelInt.set(0, tempChannelInt.get(0) + 1);
+            guild.moveVoiceMember(event.getMember(), cChannel).queue();
+            tempChannelIDs.add(cChannel.getId());
+
+            dcsend(event.getGuild().getTextChannelById((String) config.getData("EventLog")), "Created Channel " + cChannel.getName());
+        }
+
+    }
+
+    void DeleteChannel(Object eventObject, VoiceChannel channel){
+
+        if(eventObject instanceof GuildVoiceLeaveEvent){
+            GuildVoiceLeaveEvent event = (GuildVoiceLeaveEvent) eventObject;
+            Debug.log("Deleting " + TextColor.RED + event.getChannelLeft().getName());
+            event.getGuild().getVoiceChannelById(channel.getId()).delete().reason("Not Needed").queue();
+            dcsend(event.getGuild().getTextChannelById((String) config.getData("EventLog")), "Deleted Channel " + channel.getName());
+            tempChannelIDs.remove(channel.getId());
+        }
+        else if(eventObject instanceof GuildVoiceMoveEvent){
+            GuildVoiceMoveEvent event = (GuildVoiceMoveEvent) eventObject;
+            Debug.log("Deleting " + TextColor.RED + event.getChannelLeft().getName());
+            event.getGuild().getVoiceChannelById(channel.getId()).delete().reason("Not Needed").queue();
+            dcsend(event.getGuild().getTextChannelById((String) config.getData("EventLog")), "Deleted Channel " + channel.getName());
+            tempChannelIDs.remove(channel.getId());
+        }
+    }
+
+    /*void CreateChannelMove(Guild guild, Category tempChannelCategory, GuildVoiceMoveEvent event, String name, Integer userLimit){
         ChannelAction<VoiceChannel> createdChannel = guild.createVoiceChannel(name + " " + UUID.randomUUID().toString());
         createdChannel.setParent(tempChannelCategory);
 
@@ -221,7 +326,7 @@ public class Listener extends ListenerAdapter {
         tempChannelIDs.add(cChannel.getId());
 
         dcsend(event.getGuild().getTextChannelById((String) config.getData("EventLog")), "Created Channel " + cChannel.getName());
-    }
+    }*/
 
     @Override
     public void onGuildVoiceLeave(@NotNull GuildVoiceLeaveEvent event){
@@ -233,9 +338,7 @@ public class Listener extends ListenerAdapter {
 
 
         if(tempChannelIDs.contains(channel.getId()) && channel.getMembers().size() == 0){
-
-            guild.getVoiceChannelById(channel.getId()).delete().reason("Not Needed").queue();
-            dcsend(event.getGuild().getTextChannelById((String) config.getData("EventLog")), "Deleted Channel " + channel.getName());
+            DeleteChannel(event, channel);
         }
     }
 

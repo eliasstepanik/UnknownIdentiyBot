@@ -1,10 +1,12 @@
 Config.esb
 {
+ArrayList <String> Test = { 825688339315294250 825523558201294868 Test }
 ArrayList <String> Admins = { 275899874858500096 356131247115993090 }
-String BotToken = ODE0NTgxODExNTE4NjM2MDc3.YDf8bg.RTx16z8ZilSbl717s72XE-M866U
+String BotToken = ODE0NTgxODExNTE4NjM2MDc3.YDf8bg.09yinQTz1nMrU29Fmqi5-sJHGus
 String DefaultRoleID = 814573800682160138
 String Prefix = .
 String GamingCat = 814578011306459186
 String tempChannel = 825516277471903785
 String EventLog = 814916409997656124
+String test = 1232
 }

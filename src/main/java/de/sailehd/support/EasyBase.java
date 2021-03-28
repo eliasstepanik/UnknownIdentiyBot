@@ -9,11 +9,16 @@ public class EasyBase {
 
     private File easyBase = null;
     private ArrayList<String> lines = new ArrayList<String>();
+    private String fileName;
+    private String baseName;
 
 
     public EasyBase(String name){
-        String fileName = name + ".esb";
+        fileName = name + ".esb";
+        baseName = name;
+    }
 
+    public void UpdateBaseFile(boolean debugMessage){
         try {
             File newDataBase = new File(fileName);
             if (newDataBase.createNewFile()) {
@@ -31,7 +36,10 @@ public class EasyBase {
                             try {
                                 if(lines.get(0).equals(fileName) && lines.get(1).equals("{") && lines.get(lines.size() - 1).equals("}")){
                                     easyBase = tempEasyBase;
-                                    System.out.println(name +" Initialized");
+                                    if(debugMessage){
+                                        System.out.println(baseName +" Initialized");
+                                    }
+
                                     //System.out.println(lines.toString());
                                 }
                             }
@@ -75,6 +83,7 @@ public class EasyBase {
     }
 
     private boolean checkForDuplicate(String name){
+        UpdateBaseFile(false);
         for (String line : lines) {
             if(line.contains(name)){
                 return true;
@@ -115,6 +124,7 @@ public class EasyBase {
     }
 
     public void createData(String name, Object data){
+        UpdateBaseFile(false);
         try{
             if(checkForDuplicate(name)){
                 //print("Data already exists");
@@ -209,6 +219,7 @@ public class EasyBase {
     }
 
     public Object getData(String name){
+        UpdateBaseFile(false);
         for (String line : lines) {
             String[] lineStrings = line.split(" ");
             ArrayList<String> lineArrayList = new ArrayList<String>();
@@ -305,6 +316,7 @@ public class EasyBase {
     }
 
     public void editData(String name, Object data){
+        UpdateBaseFile(false);
         for (String line : lines) {
             String[] lineStrings = line.split(" ");
             ArrayList<String> lineArrayList = new ArrayList<String>();
@@ -377,6 +389,7 @@ public class EasyBase {
     }
 
     public void deleteData(String name){
+        UpdateBaseFile(false);
         for (String line : lines) {
             String[] lineStrings = line.split(" ");
             ArrayList<String> lineArrayList = new ArrayList<String>();
@@ -439,6 +452,7 @@ public class EasyBase {
     }
 
     public void arrayAdd(String name, Object data){
+        UpdateBaseFile(false);
         if(data instanceof String){
             ArrayList<String> tempList = new ArrayList<String>();
             tempList = (ArrayList<String>) getData(name);
@@ -498,6 +512,7 @@ public class EasyBase {
     }
 
     public void arrayRemove(String name, Object data){
+        UpdateBaseFile(false);
         if(data instanceof String){
             ArrayList<String> tempList = new ArrayList<String>();
             tempList = (ArrayList<String>) getData(name);
@@ -557,6 +572,7 @@ public class EasyBase {
     }
 
     public int arrayIndexOf(String name, Object data){
+        UpdateBaseFile(false);
         if(data instanceof String){
             ArrayList<String> tempList = new ArrayList<String>();
             tempList = (ArrayList<String>) getData(name);
@@ -611,6 +627,7 @@ public class EasyBase {
     }
 
     public int arraySize(String name){
+        UpdateBaseFile(false);
         try{
             ArrayList<Object> tempList = new ArrayList<Object>();
             tempList = (ArrayList<Object>) getData(name);
@@ -624,6 +641,7 @@ public class EasyBase {
     }
 
     public Object arrayGet(String name, int i){
+        UpdateBaseFile(false);
         try{
             ArrayList<Object> tempList = new ArrayList<Object>();
             tempList = (ArrayList<Object>) getData(name);
@@ -637,6 +655,7 @@ public class EasyBase {
     }
 
     public ArrayList<Object> getAll(){
+        UpdateBaseFile(false);
         ArrayList<String> names = new ArrayList<String>();
         for (String str: lines) {
             if(!(str.endsWith(".esb")) && !str.equals("{") && !str.equals("}")){
